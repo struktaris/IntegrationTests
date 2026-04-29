@@ -16,7 +16,7 @@ Such a `test.json` could be as follow:
 }
 ```
 
-The values of `"source"`, `"test"`, and `"reference"` are interpreted as relative paths (which could contain "..." or "/"), defining directories relative to the directory of the test (where `test.json` resides).
+The values of `"source"`, `"test"`, and `"reference"` are interpreted as relative paths (which could contain ".." or "/"), defining directories relative to the directory of the test (where `test.json` resides).
 
 The test is then used as follows:
 
