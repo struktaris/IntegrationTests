@@ -1,0 +1,51 @@
+{
+  "originHash" : "433e693fd5f16ba248d3aacdfeb5211291faf3f77e6f41fa60975e02ce766b34",
+  "pins" : [
+    {
+      "identity" : "autoreleasepoolshim",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/stefanspringer1/AutoreleasepoolShim",
+      "state" : {
+        "revision" : "d345d927f335db2d5e30e69ea943a045da9c16d0",
+        "version" : "1.0.3"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser",
+      "state" : {
+        "revision" : "626b5b7b2f45e1b0b1c6f4a309296d1d21d7311b",
+        "version" : "1.7.1"
+      }
+    },
+    {
+      "identity" : "swift-subprocess",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-subprocess.git",
+      "state" : {
+        "revision" : "13d087685b95d64d6aac9b94500d347bbe84c39b",
+        "version" : "0.4.0"
+      }
+    },
+    {
+      "identity" : "swift-system",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-system",
+      "state" : {
+        "revision" : "7c6ad0fc39d0763e0b699210e4124afd5041c5df",
+        "version" : "1.6.4"
+      }
+    },
+    {
+      "identity" : "swiftutilities",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/stefanspringer1/SwiftUtilities",
+      "state" : {
+        "revision" : "e565a35047a8accaf095f22d1e3df457bf24a472",
+        "version" : "6.2.17"
+      }
+    }
+  ],
+  "version" : 3
+}

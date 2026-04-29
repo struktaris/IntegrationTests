@@ -1,0 +1,7 @@
+{
+	"source": "source",
+	"test": "test",
+	"reference": "reference",
+	"environmentVariableForExecutable": "EXECUTABLE1",
+	"arguments": ["a.txt", "b.txt"]
+}
