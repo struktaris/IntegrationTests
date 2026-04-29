@@ -19,7 +19,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/stefanspringer1/SwiftUtilities", from: "6.2.17"),
+        .package(url: "https://github.com/stefanspringer1/SwiftUtilities", from: "6.2.18"),
         //.package(path: "../../stefanspringer1/SwiftUtilities"),
     ],
     targets: [

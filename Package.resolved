@@ -1,5 +1,5 @@
 {
-  "originHash" : "433e693fd5f16ba248d3aacdfeb5211291faf3f77e6f41fa60975e02ce766b34",
+  "originHash" : "0030778020de7a4b1b306de202f169645bd1434ec082f8301d763c2625613169",
   "pins" : [
     {
       "identity" : "autoreleasepoolshim",
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/stefanspringer1/SwiftUtilities",
       "state" : {
-        "revision" : "e565a35047a8accaf095f22d1e3df457bf24a472",
-        "version" : "6.2.17"
+        "revision" : "9948d3aec9d1320c8760e31f525e479fada7606f",
+        "version" : "6.2.18"
       }
     }
   ],
