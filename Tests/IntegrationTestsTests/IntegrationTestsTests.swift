@@ -35,6 +35,7 @@ import Foundation
     
     @Test func executingTests() async throws {
         let testResources = URL(fileURLWithPath: ProcessInfo.processInfo.environment["PACKAGE_DIRECTORY"]!).appending(component: "TestResources")
+        print()
         let differentFilesForTests = try await executeTests(in: testResources)
         print()
         print(differentFilesForTests)

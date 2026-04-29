@@ -64,7 +64,9 @@ public func executeTests(in directory: URL) async throws  -> [String:[String]] {
 /// returns a list of non-equal files for every test directory
 public func execute(locatedIntgrationTests: [LocatedIntegrationTest], withTopDirectory topDirectory: URL) async throws -> [String:[String]] {
     var nonEqualFilesForTests = [String:[String]]()
+    var newline = false
     for locatedIntgrationTest in locatedIntgrationTests {
+        if newline { print() } else { newline = true }
         nonEqualFilesForTests[locatedIntgrationTest.relativeDirectory] =  try await execute(locatedIntgrationTest: locatedIntgrationTest, withTopDirectory: topDirectory)
     }
     return nonEqualFilesForTests
@@ -82,7 +84,7 @@ func allFiles(in directory: URL) throws -> [URL] {
 /// returns a list of non-equal files
 public func execute(locatedIntgrationTest: LocatedIntegrationTest, withTopDirectory topDirectory: URL) async throws -> [String] {
     
-    print("\n------- TEST: \(locatedIntgrationTest.relativeDirectory)")
+    print("------- TEST: \(locatedIntgrationTest.relativeDirectory)")
     
     let sourceDirectory = locatedIntgrationTest.url(forRelativePath: locatedIntgrationTest.integrationTest.source, forTopDirectory: topDirectory)
     let testDirectory = locatedIntgrationTest.url(forRelativePath: locatedIntgrationTest.integrationTest.test, forTopDirectory: topDirectory)
