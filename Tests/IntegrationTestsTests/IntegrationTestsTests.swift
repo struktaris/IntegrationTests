@@ -6,7 +6,10 @@ import Foundation
     
     @Test func gettingTests() throws {
         let testResources = URL(fileURLWithPath: ProcessInfo.processInfo.environment["PACKAGE_DIRECTORY"]!).appending(component: "TestResources")
-        let tests = try getTests(in: testResources)
+        let tests = try getTests(
+            in: testResources,
+            usingEnvironmentVariables: false // keeping the references to the environment variables for this test!
+        )
         #expect(
             tests == [
                 LocatedIntegrationTest(
@@ -15,8 +18,8 @@ import Foundation
                         source: "source",
                         test: "test",
                         reference: "reference",
-                        environmentVariableForExecutable: "EXECUTABLE1",
-                        arguments: ["a.txt", "b.txt"]
+                        executable: "$EXECUTABLE",
+                        arguments: ["$FILE1", "$FILE2"]
                     )
                 ),
                 LocatedIntegrationTest(
@@ -25,8 +28,8 @@ import Foundation
                         source: "source",
                         test: "test",
                         reference: "reference",
-                        environmentVariableForExecutable: "EXECUTABLE1",
-                        arguments: ["a.txt", "b.txt"]
+                        executable: "$EXECUTABLE",
+                        arguments: ["$FILE1", "$FILE2"]
                     )
                 )
             ]

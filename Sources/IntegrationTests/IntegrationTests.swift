@@ -2,14 +2,41 @@ import Foundation
 import Utilities
 
 public struct IntegrationTest: Equatable, Decodable {
+    
     let source: String
     let test: String
     let reference: String
-    let environmentVariableForExecutable: String
+    let executable: String
     let arguments: [String]
+    
+    func usingEnvironmentVariables() throws -> IntegrationTest {
+        
+        func usingEnvironmentVariable(for value: String) throws -> String {
+            if value.hasPrefix("$") {
+                let environmentVariable = String(value.dropFirst())
+                guard let newValue = ProcessInfo.processInfo.environment[environmentVariable] else {
+                    throw ErrorWithDescription("environment variable \"\(environmentVariable)\" not set")
+                }
+                return newValue
+            } else {
+                return value
+            }
+        }
+        
+        return IntegrationTest(
+            source: source,
+            test: test,
+            reference: try usingEnvironmentVariable(for: reference),
+            executable: try usingEnvironmentVariable(for: executable),
+            arguments: try arguments.map { try usingEnvironmentVariable(for: $0) }
+        )
+        
+    }
+    
 }
 
 public struct LocatedIntegrationTest: Equatable {
+    
     let relativeDirectory: String
     let integrationTest: IntegrationTest
     
@@ -22,7 +49,7 @@ public struct LocatedIntegrationTest: Equatable {
     }
 }
 
-public func getTests(in directory: URL) throws -> [LocatedIntegrationTest] {
+public func getTests(in directory: URL, usingEnvironmentVariables: Bool = true) throws -> [LocatedIntegrationTest] {
     try directory.files(withPattern: /^test\.json$/, findRecursively: true).map { file in
         let integrationTest: IntegrationTest
         do {
@@ -32,7 +59,7 @@ public func getTests(in directory: URL) throws -> [LocatedIntegrationTest] {
         }
         return LocatedIntegrationTest(
             relativeDirectory: try file.deletingLastPathComponent().relativePathComponents(to: directory).joined(separator: "/"),
-            integrationTest: integrationTest
+            integrationTest: try usingEnvironmentVariables ? integrationTest.usingEnvironmentVariables() : integrationTest
         )
     }
 }
@@ -112,11 +139,7 @@ public func execute(locatedIntgrationTest: LocatedIntegrationTest, withTopDirect
         try FileManager.default.copyItem(at: file, to: testDirectory.appending(component: file.lastPathComponent))
     }
     
-    guard let executablePath = ProcessInfo.processInfo.environment[locatedIntgrationTest.integrationTest.environmentVariableForExecutable] else {
-        throw ErrorWithDescription("could not find environment variable \"\(locatedIntgrationTest.integrationTest.environmentVariableForExecutable)\"")
-    }
-    
-    let executable = URL(fileURLWithPath: executablePath)
+    let executable = URL(fileURLWithPath: locatedIntgrationTest.integrationTest.executable)
     
     do {
         let returnValue = await runProgram(

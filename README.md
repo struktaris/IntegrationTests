@@ -11,12 +11,14 @@ Such a `test.json` could be as follow:
     "source": "source",
     "test": "test",
     "reference": "reference",
-    "environmentVariableForExecutable": "EXECUTABLE1",
-    "arguments": ["a.txt", "b.txt"]
+    "executable": "$EXECUTABLE",
+    "arguments": ["$FILE1", "$FILE2"]
 }
 ```
 
 The values of `"source"`, `"test"`, and `"reference"` are interpreted as relative paths (which could contain ".." or "/"), defining directories relative to the directory of the test (where `test.json` resides).
+
+The value of `"executable"` and the entries of `"arguments"` can start with `$`, in which case the rests of it is interpreted as the name of the executable which should hold the actual value.
 
 The test is then used as follows:
 
@@ -35,4 +37,6 @@ An simple example is the test `executingTests()` (cf. the section "Testing").
 For testing of this package:
 
 1. Add the environment variable `PACKAGE_DIRECTORY` pointing the directory of this package.
-2. Add the environment variable `EXECUTABLE1` pointing to an executable that takes _n_ paths to files as arguments but does not change these files (e.g. `/usr/bin/more`). 
+2. Add the environment variable `EXECUTABLE` pointing to an executable that takes _n_ paths to files as arguments but does not change these files (e.g. `/usr/bin/more`).
+3. Add the environment variable `FILE1` of value `a.txt`.
+4. Add the environment variable `FILE2` of value `b.txt`
