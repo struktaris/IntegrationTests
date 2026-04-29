@@ -1,6 +1,6 @@
 # IntegrationTests
 
-Framework for integration tests.
+Framework for integration tests for processes that work on files in a directory.
 
 Calling `executeTests(in:)` with a directory as argument, files with name `test.json` are being searched for in the directory, each of those being interpreted as a test.
 

@@ -64,23 +64,65 @@ public func getTests(in directory: URL, usingEnvironmentVariables: Bool = true) 
     }
 }
 
-func differentFiles(in lhs: URL, comparedTo rhs: URL, except: [String]? = nil) throws -> [String] {
-    var differentFiles = [String]()
-    for lhsFile in try lhs.files(withPattern: ".*", findRecursively: true) {
-        let fileName = lhsFile.lastPathComponent
-        if except?.contains(fileName) == true { continue }
-        guard let lhsData = try? Data(contentsOf: lhsFile) else {
-            throw ErrorWithDescription("could not read \(lhsFile.osPath)")
-        }
-        let rhsFile = rhs.appending(component: fileName)
-        guard let rhsData = try? Data(contentsOf: rhsFile) else {
-            throw ErrorWithDescription("could not read \(rhsFile.osPath)")
-        }
-        if lhsData != rhsData {
-            differentFiles.append(fileName)
+func differentFiles(
+    in lhs: URL,
+    comparedTo rhs: URL,
+    ignoreEmptyDirectories: Bool = true,
+    except: [String]? = nil
+) throws -> Set<String> {
+    var collectedDifferentFiles = Set<String>()
+    
+    try doTraversal(directoryToBeTraversed: lhs, directoryToBeComparedWith: rhs, ignoreExistingOther: false)
+    try doTraversal(directoryToBeTraversed: rhs, directoryToBeComparedWith: lhs, ignoreExistingOther: true)
+    
+    func doTraversal(directoryToBeTraversed: URL, directoryToBeComparedWith: URL, ignoreExistingOther: Bool) throws {
+        guard directoryToBeTraversed.isDirectory else { return }
+        for file in try FileManager.default.contentsOfDirectory(at: directoryToBeTraversed, includingPropertiesForKeys: nil) {
+            let fileName = file.lastPathComponent
+            if except?.contains(fileName) == true { continue }
+            if file.isDirectory {
+                let subdirectoryToBeComparedWith = directoryToBeComparedWith.appending(component: fileName)
+                guard subdirectoryToBeComparedWith.isDirectory else {
+                    if !ignoreEmptyDirectories || subdirectoryToBeComparedWith.exists {
+                        collectedDifferentFiles.insert(fileName)
+                    }
+                    continue
+                }
+                guard !ignoreExistingOther else {
+                    continue
+                }
+                for differentFile in try differentFiles(
+                    in: file,
+                    comparedTo: subdirectoryToBeComparedWith,
+                    ignoreEmptyDirectories: ignoreEmptyDirectories,
+                    except: except
+                ) {
+                    collectedDifferentFiles.insert("\(fileName)/\(differentFile)")
+                }
+                continue
+            }
+            
+            let fileToBeCompared = directoryToBeComparedWith.appending(component: fileName)
+            guard fileToBeCompared.isFile else {
+                collectedDifferentFiles.insert(fileName)
+                continue
+            }
+            guard !ignoreExistingOther else {
+                continue
+            }
+            guard let fileData = try? Data(contentsOf: file) else {
+                throw ErrorWithDescription("could not read \(file.osPath)")
+            }
+            guard let fileToBeComparedData = try? Data(contentsOf: fileToBeCompared) else {
+                throw ErrorWithDescription("could not read \(fileToBeCompared.osPath)")
+            }
+            if fileData != fileToBeComparedData {
+                collectedDifferentFiles.insert(fileName)
+            }
         }
     }
-    return differentFiles
+    
+    return collectedDifferentFiles
 }
 
 /// returns a list of non-equal files for every test directory
@@ -157,4 +199,5 @@ public func execute(locatedIntgrationTest: LocatedIntegrationTest, withTopDirect
     }
     
     return try differentFiles(in: testDirectory, comparedTo: referenceDirectory, except: ignoredFiles)
+        .sorted(by: { $0.compare($01, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedAscending})
 }

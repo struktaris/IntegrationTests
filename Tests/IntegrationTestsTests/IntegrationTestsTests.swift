@@ -36,6 +36,29 @@ import Foundation
         )
     }
     
+    @Test func directoryComparison() throws {
+        let comparisonTests = URL(fileURLWithPath: ProcessInfo.processInfo.environment["PACKAGE_DIRECTORY"]!).appending(component: "TestResources").appending(component: "comparisonTests")
+        
+        func doIt(ignoreEmptyDirectories: Bool) throws -> [String] {
+            try differentFiles(
+                in: comparisonTests.appending(component: "test"),
+                comparedTo: comparisonTests.appending(component: "reference"),
+                ignoreEmptyDirectories: ignoreEmptyDirectories,
+                except: [".gitignore", ".DS_Store", "Thumbs.db"]
+            ).sorted(by: { $0.compare($01, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedAscending})
+        }
+        
+        do {
+            let result = try doIt(ignoreEmptyDirectories: true)
+            #expect(result == ["2.txt", "a/a3.txt", "a/aa/aa2.txt", "x"])
+        }
+        
+        do {
+            let result = try doIt(ignoreEmptyDirectories: false)
+            #expect(result == ["2.txt", "a/a3.txt", "a/aa/aa2.txt", "a/ab", "c", "d", "x"])
+        }
+    }
+    
     @Test func executingTests() async throws {
         let testResources = URL(fileURLWithPath: ProcessInfo.processInfo.environment["PACKAGE_DIRECTORY"]!).appending(component: "TestResources")
         print()
