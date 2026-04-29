@@ -3,5 +3,6 @@
 	"test": "test",
 	"reference": "reference",
 	"executable": "$EXECUTABLE",
-	"arguments": ["$FILE1", "$FILE2"]
+	"arguments": ["$FILE1", "$FILE2"],
+	"ignore": [".gitignore", ".DS_Store", "Thumbs.db", "*.log"]
 }

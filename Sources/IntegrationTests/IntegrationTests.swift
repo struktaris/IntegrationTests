@@ -8,6 +8,7 @@ public struct IntegrationTest: Equatable, Decodable {
     let reference: String
     let executable: String
     let arguments: [String]
+    let ignore: [String]
     
     func usingEnvironmentVariables() throws -> IntegrationTest {
         
@@ -28,7 +29,8 @@ public struct IntegrationTest: Equatable, Decodable {
             test: test,
             reference: try usingEnvironmentVariable(for: reference),
             executable: try usingEnvironmentVariable(for: executable),
-            arguments: try arguments.map { try usingEnvironmentVariable(for: $0) }
+            arguments: try arguments.map { try usingEnvironmentVariable(for: $0) },
+            ignore: ignore
         )
         
     }
@@ -68,7 +70,7 @@ func differentFiles(
     in lhs: URL,
     comparedTo rhs: URL,
     ignoreEmptyDirectories: Bool = true,
-    except: [String]? = nil
+    ignore: ((String) -> Bool)? = nil
 ) throws -> Set<String> {
     var collectedDifferentFiles = Set<String>()
     
@@ -79,7 +81,7 @@ func differentFiles(
         guard directoryToBeTraversed.isDirectory else { return }
         for file in try FileManager.default.contentsOfDirectory(at: directoryToBeTraversed, includingPropertiesForKeys: nil) {
             let fileName = file.lastPathComponent
-            if except?.contains(fileName) == true { continue }
+            if ignore?(fileName) == true { continue }
             if file.isDirectory {
                 let subdirectoryToBeComparedWith = directoryToBeComparedWith.appending(component: fileName)
                 guard subdirectoryToBeComparedWith.isDirectory else {
@@ -95,7 +97,7 @@ func differentFiles(
                     in: file,
                     comparedTo: subdirectoryToBeComparedWith,
                     ignoreEmptyDirectories: ignoreEmptyDirectories,
-                    except: except
+                    ignore: ignore
                 ) {
                     collectedDifferentFiles.insert("\(fileName)/\(differentFile)")
                 }
@@ -141,13 +143,11 @@ public func execute(locatedIntgrationTests: [LocatedIntegrationTest], withTopDir
     return nonEqualFilesForTests
 }
 
-let ignoredFiles = [
-    ".gitignore"
-]
+nonisolated(unsafe) let ignoredFiles = /^(\.gitignore|\.DS_Store|Thumbs\.db|.*\.log)$/
 
 func allFiles(in directory: URL) throws -> [URL] {
     try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [])
-        .filter({!ignoredFiles.contains($0.lastPathComponent)  })
+        .filter({ !$0.lastPathComponent.contains(ignoredFiles) })
 }
 
 /// returns a list of non-equal files
@@ -198,6 +198,8 @@ public func execute(locatedIntgrationTest: LocatedIntegrationTest, withTopDirect
         }
     }
     
-    return try differentFiles(in: testDirectory, comparedTo: referenceDirectory, except: ignoredFiles)
+    let regexes = try locatedIntgrationTest.integrationTest.ignore.map { try Regex("^\($0.replacing(".", with: #"\."#).replacing("*", with: ".*"))$") }
+    
+    return try differentFiles(in: testDirectory, comparedTo: referenceDirectory, ignore: { fileName in regexes.contains(where: { fileName.contains($0) }) })
         .sorted(by: { $0.compare($01, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedAscending})
 }

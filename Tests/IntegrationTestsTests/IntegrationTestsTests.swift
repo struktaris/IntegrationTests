@@ -19,7 +19,8 @@ import Foundation
                         test: "test",
                         reference: "reference",
                         executable: "$EXECUTABLE",
-                        arguments: ["$FILE1", "$FILE2"]
+                        arguments: ["$FILE1", "$FILE2"],
+                        ignore: [".gitignore", ".DS_Store", "Thumbs.db", "*.log"]
                     )
                 ),
                 LocatedIntegrationTest(
@@ -29,7 +30,8 @@ import Foundation
                         test: "test",
                         reference: "reference",
                         executable: "$EXECUTABLE",
-                        arguments: ["$FILE1", "$FILE2"]
+                        arguments: ["$FILE1", "$FILE2"],
+                        ignore: [".gitignore", ".DS_Store", "Thumbs.db", "*.log"]
                     )
                 )
             ]
@@ -44,7 +46,7 @@ import Foundation
                 in: comparisonTests.appending(component: "test"),
                 comparedTo: comparisonTests.appending(component: "reference"),
                 ignoreEmptyDirectories: ignoreEmptyDirectories,
-                except: [".gitignore", ".DS_Store", "Thumbs.db"]
+                ignore: { [".gitignore", ".DS_Store", "Thumbs.db"].contains($0) }
             ).sorted(by: { $0.compare($01, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedAscending})
         }
         
