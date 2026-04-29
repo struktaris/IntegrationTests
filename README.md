@@ -20,7 +20,7 @@ The values of `"source"`, `"test"`, and `"reference"` are interpreted as relativ
 
 The test is then used as follows:
 
-1. The directory defined by `"test"` is cleared and then filled with copies of the files in directory defined by `"source"`.
+1. The directory defined by `"test"` is cleared and then filled with copies of the files in the directory defined by `"source"`.
 2. The value of the environment variable which is named as the value of `"environmentVariableForExecutable"` is used as the of an executable that is called with the argument defined by tzhe values of `"arguments"`. The current directory for this call is the directory defined by `"test`.
 3. The content of the directory defined by `"test"` is then compared to content of the directory defined by `"reference"`.
 
