@@ -38,6 +38,11 @@ import Foundation
         )
     }
     
+    @Test func makingRegexText() throws {
+        #expect(makeRegexText(from: "*.log") == #"^.*\.log$"#)
+        #expect(makeRegexText(from: #"*.\*"#) == #"^.*\.\*$"#)
+    }
+    
     @Test func directoryComparison() throws {
         let comparisonTests = URL(fileURLWithPath: ProcessInfo.processInfo.environment["PACKAGE_DIRECTORY"]!).appending(component: "TestResources").appending(component: "comparisonTests")
         

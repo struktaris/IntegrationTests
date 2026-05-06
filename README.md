@@ -21,7 +21,9 @@ The values of `"source"`, `"test"`, and `"reference"` are interpreted as relativ
 
 The value of `"executable"` and the entries of `"arguments"` can start with `$`, in which case the rests of it is interpreted as the name of the executable which should hold the actual value.
 
-The `"ignore"` values define the file names (including directory names) to be ignored for the comparison. The simple wildcard `*` can be used there. `".DS_Store"`, and "Thumbs.db", and `".gitignore"` are always being ignored.
+The `"ignore"` values define the file names (including directory names) to be ignored for the comparison. The simple wildcard `*` can be used there[^1]. `".DS_Store"`, and "Thumbs.db", and `".gitignore"` are always being ignored.
+
+[^1]: The wildcard can be escaped with a proceeding backslash.
 
 The test is then used as follows:
 

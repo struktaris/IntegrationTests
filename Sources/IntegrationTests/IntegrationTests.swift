@@ -199,8 +199,12 @@ public func execute(locatedIntgrationTest: LocatedIntegrationTest, withTopDirect
     }
     
     let regexes = try ([".DS_Store", "Thumbs.db", ".gitignore"] + locatedIntgrationTest.integrationTest.ignore)
-        .map { try Regex("^\($0.replacing(".", with: #"\."#).replacing("*", with: ".*"))$") }
+        .map { try Regex(makeRegexText(from: $0)) }
     
     return try differentFiles(in: testDirectory, comparedTo: referenceDirectory, ignore: { fileName in regexes.contains(where: { fileName.contains($0) }) })
         .sorted(by: { $0.compare($01, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedAscending})
+}
+
+func makeRegexText(from text: String) -> String {
+    "^\(text.replacing(".", with: #"\."#).replacing(/(^|[^\\])\*/) { match in "\(match.output.1).*" })$"
 }
