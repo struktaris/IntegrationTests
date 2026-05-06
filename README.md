@@ -24,11 +24,13 @@ The value of `"executable"` and the entries of `"arguments"` can start with `$`,
 
 The `"ignoreFileNames"` values define file names or directory names to be ignored for the comparison. `".DS_Store"`, and `"Thumbs.db"`, and `".gitignore"` are always being ignored.
 
-The `"ignoreRelativePaths"` values define relative paths to be ignored for the comparison. Those relative paths can designate both files and directories.
+The `"ignoreRelativePaths"` values define relative paths[^1] to be ignored for the comparison. Those relative paths can designate both files and directories.
 
-In the values for both `"ignoreFileNames"` and `"ignoreRelativePaths"` the wildcard `*` can be used to match any text[^1]. 
+[^1]: relative to the directory of the `test.json` file
 
-[^1]: The wildcard can be escaped with a proceeding backslash.
+In the values for both `"ignoreFileNames"` and `"ignoreRelativePaths"` the wildcard `*` can be used to match any text[^2]. 
+
+[^2]: The wildcard can be escaped with a proceeding backslash.
 
 The test is then used as follows:
 
