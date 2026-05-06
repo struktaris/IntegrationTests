@@ -26,7 +26,7 @@ The `"ignoreFileNames"` values define file names or directory names to be ignore
 
 The `"ignoreRelativePaths"` values define relative paths[^1] to be ignored for the comparison. Those relative paths can designate both files and directories.
 
-[^1]: relative to the directory of the `test.json` file
+[^1]: relative to the directories to be compared
 
 In the values for both `"ignoreFileNames"` and `"ignoreRelativePaths"` the wildcard `*` can be used to match any text[^2]. 
 
