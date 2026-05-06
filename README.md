@@ -13,7 +13,7 @@ Such a `test.json` could be as follow:
     "reference": "reference",
     "executable": "$EXECUTABLE",
     "arguments": ["$FILE1", "$FILE2"],
-    "ignoreAll": ["*.log"],
+    "ignoreNames": ["*.log"],
     "ignoreRelativePaths": ["subdir/info.txt"]
 }
 ```
@@ -22,11 +22,11 @@ The values of `"source"`, `"test"`, and `"reference"` are interpreted as relativ
 
 The value of `"executable"` and the entries of `"arguments"` can start with `$`, in which case the rests of it is interpreted as the name of the executable which should hold the actual value.
 
-The `"ignoreAll"` values define file names or directory names to be ignored for the comparison. `".DS_Store"`, and `"Thumbs.db"`, and `".gitignore"` are always being ignored.
+The `"ignoreNames"` values define file names or directory names to be ignored for the comparison. `".DS_Store"`, and `"Thumbs.db"`, and `".gitignore"` are always being ignored.
 
 The `"ignoreRelativePaths"` values define relative paths to be ignored for the comparison. Those relative paths can designate both files and directories.
 
-In the values for both `"ignoreAll"` and `"ignoreRelativePaths"` the wildcard `*` can be used to match any text[^1]. 
+In the values for both `"ignoreNames"` and `"ignoreRelativePaths"` the wildcard `*` can be used to match any text[^1]. 
 
 [^1]: The wildcard can be escaped with a proceeding backslash.
 
@@ -35,8 +35,6 @@ The test is then used as follows:
 1. The directory defined by `"test"` is cleared and then filled with copies of the files in the directory defined by `"source"`.
 2. The value of the environment variable which is named as the value of `"environmentVariableForExecutable"` is used as the of an executable that is called with the argument defined by tzhe values of `"arguments"`. The current directory for this call is the directory defined by `"test`.
 3. The content of the directory defined by `"test"` is then compared to content of the directory defined by `"reference"`.
-
-All `.gitignore` files are ignored by this process.
 
 The result for all tests is a mapping of the relative paths of the directories which contain the `test.json` files to the list of the files that differ in step 3.
 

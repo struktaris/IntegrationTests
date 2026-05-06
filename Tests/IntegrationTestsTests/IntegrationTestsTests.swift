@@ -20,7 +20,7 @@ import Foundation
                         reference: "reference",
                         executable: "$EXECUTABLE",
                         arguments: ["$FILE1", "$FILE2"],
-                        ignoreAll: ["*.log"],
+                        ignoreNames: ["*.log"],
                         ignoreRelativePaths: nil
                         
                     )
@@ -33,7 +33,7 @@ import Foundation
                         reference: "reference",
                         executable: "$EXECUTABLE",
                         arguments: ["$FILE1", "$FILE2"],
-                        ignoreAll: nil,
+                        ignoreNames: nil,
                         ignoreRelativePaths: ["*.log"]
                     )
                 )
