@@ -69,7 +69,7 @@ public func getTests(in directory: URL, usingEnvironmentVariables: Bool = true) 
 }
 
 struct FileNameWithRelativePath {
-    let fileName: String
+    let fileName: String?
     let relativePath: String
 }
 
@@ -94,6 +94,10 @@ func differentFiles(
                 relativePath: relativeDirectory?.appending("/").appending(fileName) ?? fileName
             )) == true { continue }
             if file.isDirectory {
+                if ignore?(FileNameWithRelativePath(
+                    fileName: nil,
+                    relativePath: relativeDirectory?.appending("/").appending(fileName) ?? fileName
+                )) == true { continue }
                 let subdirectoryToBeComparedWith = directoryToBeComparedWith.appending(component: fileName)
                 guard subdirectoryToBeComparedWith.isDirectory else {
                     if !ignoreEmptyDirectories || subdirectoryToBeComparedWith.exists {
@@ -217,8 +221,8 @@ public func execute(locatedIntgrationTest: LocatedIntegrationTest, withTopDirect
         .map { try Regex(makeRegexText(from: $0)) }
     
     return try differentFiles(in: testDirectory, comparedTo: referenceDirectory, ignore: { fileNameWithRelativePath in
-        regexesForIgnoringAll.contains(where: { fileNameWithRelativePath.fileName.contains($0) }) ||
-        regexesForIgnoringRelativePaths?.contains(where: { fileNameWithRelativePath.relativePath.contains($0) }) == true
+        regexesForIgnoringRelativePaths?.contains(where: { fileNameWithRelativePath.relativePath.contains($0) }) == true ||
+        (fileNameWithRelativePath.fileName != nil ? regexesForIgnoringAll.contains(where: { fileNameWithRelativePath.fileName!.contains($0) }) : false)
     })
         .sorted(by: { $0.compare($01, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedAscending})
 }

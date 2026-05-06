@@ -67,13 +67,18 @@ import Foundation
         }
         
         do {
+            let result = try doIt(ignoreEmptyDirectories: true, ignoringFileNames: ["a3.txt"])
+            #expect(result == ["2.txt", "a/aa/aa2.txt", "x"])
+        }
+        
+        do {
             let result = try doIt(ignoreEmptyDirectories: true, ignoringRelativePaths: ["a/a3.txt"])
             #expect(result == ["2.txt", "a/aa/aa2.txt", "x"])
         }
         
         do {
-            let result = try doIt(ignoreEmptyDirectories: true, ignoringFileNames: ["a3.txt"])
-            #expect(result == ["2.txt", "a/aa/aa2.txt", "x"])
+            let result = try doIt(ignoreEmptyDirectories: true, ignoringRelativePaths: ["a/aa"])
+            #expect(result == ["2.txt", "a/a3.txt", "x"])
         }
         
         do {

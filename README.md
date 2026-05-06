@@ -24,7 +24,7 @@ The value of `"executable"` and the entries of `"arguments"` can start with `$`,
 
 The `"ignoreAll"` values define file names (including directory names) to be ignored for the comparison. `".DS_Store"`, and `"Thumbs.db"`, and `".gitignore"` are always being ignored.
 
-The `"ignoreRelativePaths"` values define relative paths to files to be ignored for the comparison.
+The `"ignoreRelativePaths"` values define relative paths to be ignored for the comparison. Those relative paths can designate both files and directories.
 
 In the values for both `"ignoreAll"` and `"ignoreRelativePaths"` the wildcard `*` can be used to match any text[^1]. 
 
