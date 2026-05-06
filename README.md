@@ -13,7 +13,7 @@ Such a `test.json` could be as follow:
     "reference": "reference",
     "executable": "$EXECUTABLE",
     "arguments": ["$FILE1", "$FILE2"],
-    "ignoreNames": ["*.log"],
+    "ignoreFileNames": ["*.log"],
     "ignoreRelativePaths": ["subdir/info.txt"]
 }
 ```
@@ -22,11 +22,11 @@ The values of `"source"`, `"test"`, and `"reference"` are interpreted as relativ
 
 The value of `"executable"` and the entries of `"arguments"` can start with `$`, in which case the rests of it is interpreted as the name of the executable which should hold the actual value.
 
-The `"ignoreNames"` values define file names or directory names to be ignored for the comparison. `".DS_Store"`, and `"Thumbs.db"`, and `".gitignore"` are always being ignored.
+The `"ignoreFileNames"` values define file names or directory names to be ignored for the comparison. `".DS_Store"`, and `"Thumbs.db"`, and `".gitignore"` are always being ignored.
 
 The `"ignoreRelativePaths"` values define relative paths to be ignored for the comparison. Those relative paths can designate both files and directories.
 
-In the values for both `"ignoreNames"` and `"ignoreRelativePaths"` the wildcard `*` can be used to match any text[^1]. 
+In the values for both `"ignoreFileNames"` and `"ignoreRelativePaths"` the wildcard `*` can be used to match any text[^1]. 
 
 [^1]: The wildcard can be escaped with a proceeding backslash.
 
