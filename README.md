@@ -22,7 +22,7 @@ The values of `"source"`, `"test"`, and `"reference"` are interpreted as relativ
 
 The value of `"executable"` and the entries of `"arguments"` can start with `$`, in which case the rests of it is interpreted as the name of the executable which should hold the actual value.
 
-The `"ignoreAll"` values define file names (including directory names) to be ignored for the comparison. `".DS_Store"`, and `"Thumbs.db"`, and `".gitignore"` are always being ignored.
+The `"ignoreAll"` values define file names or directory names to be ignored for the comparison. `".DS_Store"`, and `"Thumbs.db"`, and `".gitignore"` are always being ignored.
 
 The `"ignoreRelativePaths"` values define relative paths to be ignored for the comparison. Those relative paths can designate both files and directories.
 
