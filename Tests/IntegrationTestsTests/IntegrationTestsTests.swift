@@ -20,7 +20,7 @@ import Foundation
                         reference: "reference",
                         executable: "$EXECUTABLE",
                         arguments: ["$FILE1", "$FILE2"],
-                        ignore: [".gitignore", ".DS_Store", "Thumbs.db", "*.log"]
+                        ignore: ["*.log"]
                     )
                 ),
                 LocatedIntegrationTest(
@@ -31,7 +31,7 @@ import Foundation
                         reference: "reference",
                         executable: "$EXECUTABLE",
                         arguments: ["$FILE1", "$FILE2"],
-                        ignore: [".gitignore", ".DS_Store", "Thumbs.db", "*.log"]
+                        ignore: ["*.log"]
                     )
                 )
             ]

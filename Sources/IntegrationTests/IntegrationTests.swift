@@ -198,7 +198,8 @@ public func execute(locatedIntgrationTest: LocatedIntegrationTest, withTopDirect
         }
     }
     
-    let regexes = try locatedIntgrationTest.integrationTest.ignore.map { try Regex("^\($0.replacing(".", with: #"\."#).replacing("*", with: ".*"))$") }
+    let regexes = try ([".DS_Store", "Thumbs.db", ".gitignore"] + locatedIntgrationTest.integrationTest.ignore)
+        .map { try Regex("^\($0.replacing(".", with: #"\."#).replacing("*", with: ".*"))$") }
     
     return try differentFiles(in: testDirectory, comparedTo: referenceDirectory, ignore: { fileName in regexes.contains(where: { fileName.contains($0) }) })
         .sorted(by: { $0.compare($01, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedAscending})

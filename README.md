@@ -13,7 +13,7 @@ Such a `test.json` could be as follow:
     "reference": "reference",
     "executable": "$EXECUTABLE",
     "arguments": ["$FILE1", "$FILE2"],
-    "ignore": [".gitignore", ".DS_Store", "Thumbs.db", "*.log"]
+    "ignore": ["*.log"]
 }
 ```
 
@@ -21,7 +21,7 @@ The values of `"source"`, `"test"`, and `"reference"` are interpreted as relativ
 
 The value of `"executable"` and the entries of `"arguments"` can start with `$`, in which case the rests of it is interpreted as the name of the executable which should hold the actual value.
 
-The `"ignore"` values define the file names (including directory names) to be ignored for the comparison. The simple wildcard `*` can be used there.
+The `"ignore"` values define the file names (including directory names) to be ignored for the comparison. The simple wildcard `*` can be used there. `".DS_Store"`, and "Thumbs.db", and `".gitignore"` are always being ignored.
 
 The test is then used as follows:
 
