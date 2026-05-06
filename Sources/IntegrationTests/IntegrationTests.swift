@@ -8,7 +8,7 @@ public struct IntegrationTest: Equatable, Decodable {
     let reference: String
     let executable: String
     let arguments: [String]
-    let ignoreFileNames: [String]?
+    let ignoreNames: [String]?
     let ignoreRelativePaths: [String]?
     
     func usingEnvironmentVariables() throws -> IntegrationTest {
@@ -31,7 +31,7 @@ public struct IntegrationTest: Equatable, Decodable {
             reference: try usingEnvironmentVariable(for: reference),
             executable: try usingEnvironmentVariable(for: executable),
             arguments: try arguments.map { try usingEnvironmentVariable(for: $0) },
-            ignoreFileNames: ignoreFileNames,
+            ignoreNames: ignoreNames,
             ignoreRelativePaths: ignoreRelativePaths
         )
         
@@ -210,14 +210,14 @@ public func execute(locatedIntgrationTest: LocatedIntegrationTest, withTopDirect
         }
     }
     
-    let regexesForIgnoringFileNames = try ([".DS_Store", "Thumbs.db", ".gitignore"] + (locatedIntgrationTest.integrationTest.ignoreFileNames ?? []))
+    let regexesForIgnoringNames = try ([".DS_Store", "Thumbs.db", ".gitignore"] + (locatedIntgrationTest.integrationTest.ignoreNames ?? []))
         .map { try Regex(makeRegexText(from: $0)) }
     
     let regexesForIgnoringRelativePaths = try locatedIntgrationTest.integrationTest.ignoreRelativePaths?
         .map { try Regex(makeRegexText(from: $0)) }
     
     return try differentFiles(in: testDirectory, comparedTo: referenceDirectory, ignore: { fileNameWithRelativePath in
-        regexesForIgnoringFileNames.contains(where: { fileNameWithRelativePath.fileName.contains($0) }) ||
+        regexesForIgnoringNames.contains(where: { fileNameWithRelativePath.fileName.contains($0) }) ||
         regexesForIgnoringRelativePaths?.contains(where: { fileNameWithRelativePath.relativePath.contains($0) }) == true
     })
         .sorted(by: { $0.compare($01, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedAscending})
