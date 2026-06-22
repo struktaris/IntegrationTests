@@ -14,7 +14,9 @@ Such a `test.json` could be as follow:
     "executable": "$EXECUTABLE",
     "arguments": ["$FILE1", "$FILE2"],
     "ignoreNames": ["*.log"],
-    "ignoreRelativePaths": ["subdir/info.txt"]
+    "ignoreRelativePaths": ["subdir/info.txt"],
+    "doNotCompareNames": ["do_not_compare_me"],
+    "doNotCompareRelativePaths": ["do_not_compare_anything_here"]
 }
 ```
 
@@ -26,9 +28,13 @@ The `"ignoreNames"` values define file names or directory names to be ignored fo
 
 The `"ignoreRelativePaths"` values define relative paths[^1] to be ignored for the comparison. Those relative paths can designate both files and directories.
 
+The `"doNotCompareNames"` values define file names or directory names for which the content of files will not be compared. If a file with such a name has no counterpart, it will still be listed in the differences.
+
+The `"doNotCompareRelativePaths"` values define relative paths[^1] for which the content of files is also not compared, in the same manner as described above for the `"doNotCompareNames"` values. Those relative paths can designate both files and directories.
+
 [^1]: relative to the directories to be compared
 
-In the values for both `"ignoreNames"` and `"ignoreRelativePaths"` the wildcard `*` can be used to match any text[^2]. 
+In the values of `"ignoreNames"`, `"ignoreRelativePaths"`, `"doNotCompareNames"`, and `"doNotCompareRelativePaths"` the wildcard `*` can be used to match any text[^2]. 
 
 [^2]: The wildcard can be escaped with a proceeding backslash.
 

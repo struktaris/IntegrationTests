@@ -21,8 +21,9 @@ import Foundation
                         executable: "$EXECUTABLE",
                         arguments: ["$FILE1", "$FILE2"],
                         ignoreNames: ["*.log"],
-                        ignoreRelativePaths: nil
-                        
+                        ignoreRelativePaths: nil,
+                        doNotCompareNames: nil,
+                        doNotCompareRelativePaths: nil
                     )
                 ),
                 LocatedIntegrationTest(
@@ -34,7 +35,9 @@ import Foundation
                         executable: "$EXECUTABLE",
                         arguments: ["$FILE1", "$FILE2"],
                         ignoreNames: nil,
-                        ignoreRelativePaths: ["*.log"]
+                        ignoreRelativePaths: ["*.log"],
+                        doNotCompareNames: nil,
+                        doNotCompareRelativePaths: nil
                     )
                 )
             ]
@@ -49,7 +52,13 @@ import Foundation
     @Test func directoryComparison() throws {
         let comparisonTests = URL(fileURLWithPath: ProcessInfo.processInfo.environment["PACKAGE_DIRECTORY"]!).appending(component: "TestResources").appending(component: "comparisonTests")
         
-        func doIt(ignoreEmptyDirectories: Bool, ignoringFileNames: [String]? = nil, ignoringRelativePaths: [String]? = nil) throws -> [String] {
+        func doIt(
+            ignoreEmptyDirectories: Bool,
+            ignoringFileNames: [String]? = nil,
+            ignoringRelativePaths: [String]? = nil,
+            doNotCompareNames: [String]? = nil,
+            doNotCompareRelativePaths: [String]? = nil
+        ) throws -> [String] {
             try differentFiles(
                 in: comparisonTests.appending(component: "test"),
                 comparedTo: comparisonTests.appending(component: "reference"),
@@ -57,6 +66,10 @@ import Foundation
                 ignore: { fileNameWithRelativePath in
                     ([".gitignore", ".DS_Store", "Thumbs.db"] + (ignoringFileNames ?? [])).contains(fileNameWithRelativePath.fileName) ||
                     ignoringRelativePaths?.contains(fileNameWithRelativePath.relativePath) == true
+                },
+                doNotCompare: { fileNameWithRelativePath in
+                    doNotCompareNames?.contains(fileNameWithRelativePath.fileName) == true ||
+                    doNotCompareRelativePaths?.contains(fileNameWithRelativePath.relativePath) == true
                 }
             ).sorted(by: { $0.compare($01, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedAscending})
         }
@@ -71,9 +84,21 @@ import Foundation
             #expect(result == ["2.txt", "a/aa/aa2.txt", "x"])
         }
         
+        // ...but without comparing the content of files with name "2.txt":
+        do {
+            let result = try doIt(ignoreEmptyDirectories: true, ignoringFileNames: ["a3.txt"], doNotCompareNames: ["2.txt"])
+            #expect(result == ["a/aa/aa2.txt", "x"])
+        }
+        
         do {
             let result = try doIt(ignoreEmptyDirectories: true, ignoringRelativePaths: ["a/a3.txt"])
             #expect(result == ["2.txt", "a/aa/aa2.txt", "x"])
+        }
+        
+        // ...but without comparing the content of files with relative path "a":
+        do {
+            let result = try doIt(ignoreEmptyDirectories: true, ignoringRelativePaths: ["a/a3.txt"], doNotCompareRelativePaths: ["a"])
+            #expect(result == ["2.txt", "x"])
         }
         
         do {

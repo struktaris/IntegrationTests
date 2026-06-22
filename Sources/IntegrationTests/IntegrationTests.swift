@@ -10,6 +10,8 @@ public struct IntegrationTest: Equatable, Decodable {
     let arguments: [String]
     let ignoreNames: [String]?
     let ignoreRelativePaths: [String]?
+    let doNotCompareNames: [String]?
+    let doNotCompareRelativePaths: [String]?
     
     func usingEnvironmentVariables() throws -> IntegrationTest {
         
@@ -32,7 +34,9 @@ public struct IntegrationTest: Equatable, Decodable {
             executable: try usingEnvironmentVariable(for: executable),
             arguments: try arguments.map { try usingEnvironmentVariable(for: $0) },
             ignoreNames: ignoreNames,
-            ignoreRelativePaths: ignoreRelativePaths
+            ignoreRelativePaths: ignoreRelativePaths,
+            doNotCompareNames: doNotCompareNames,
+            doNotCompareRelativePaths: doNotCompareRelativePaths
         )
         
     }
@@ -77,7 +81,9 @@ func differentFiles(
     in lhs: URL,
     comparedTo rhs: URL,
     ignoreEmptyDirectories: Bool = true,
-    ignore: ((FileNameWithRelativePath) -> Bool)? = nil,
+    ignore: ((FileNameWithRelativePath) -> Bool)?,
+    compareNothing: Bool = false,
+    doNotCompare: ((FileNameWithRelativePath) -> Bool)?,
     relativeDirectory: String? = nil
 ) throws -> Set<String> {
     var collectedDifferentFiles = Set<String>()
@@ -93,6 +99,10 @@ func differentFiles(
                 fileName: fileName,
                 relativePath: relativeDirectory?.appending("/").appending(fileName) ?? fileName
             )) == true { continue }
+            let doNotCompareThis = compareNothing || doNotCompare?(FileNameWithRelativePath(
+                fileName: fileName,
+                relativePath: relativeDirectory?.appending("/").appending(fileName) ?? fileName
+            )) == true
             if file.isDirectory {
                 let subdirectoryToBeComparedWith = directoryToBeComparedWith.appending(component: fileName)
                 guard subdirectoryToBeComparedWith.isDirectory else {
@@ -109,6 +119,8 @@ func differentFiles(
                     comparedTo: subdirectoryToBeComparedWith,
                     ignoreEmptyDirectories: ignoreEmptyDirectories,
                     ignore: ignore,
+                    compareNothing: doNotCompareThis,
+                    doNotCompare: doNotCompare,
                     relativeDirectory: relativeDirectory?.appending("/").appending(fileName) ?? fileName
                 ) {
                     collectedDifferentFiles.insert("\(fileName)/\(differentFile)")
@@ -121,9 +133,10 @@ func differentFiles(
                 collectedDifferentFiles.insert(fileName)
                 continue
             }
-            guard !ignoreExistingOther else {
+            guard !ignoreExistingOther && !doNotCompareThis else {
                 continue
             }
+            print("COMPARING: \(file.osPath), \(fileToBeCompared.osPath)")
             guard let fileData = try? Data(contentsOf: file) else {
                 throw ErrorWithDescription("could not read \(file.osPath)")
             }
@@ -228,10 +241,24 @@ public func execute(locatedIntgrationTest: LocatedIntegrationTest, withTopDirect
     let regexesForIgnoringRelativePaths = try locatedIntgrationTest.integrationTest.ignoreRelativePaths?
         .map { try Regex(makeRegexText(from: $0)) }
     
-    return try differentFiles(in: testDirectory, comparedTo: referenceDirectory, ignore: { fileNameWithRelativePath in
-        regexesForIgnoringNames.contains(where: { fileNameWithRelativePath.fileName.contains($0) }) ||
-        regexesForIgnoringRelativePaths?.contains(where: { fileNameWithRelativePath.relativePath.contains($0) }) == true
-    })
+    let regexesForDoNotCompareNames = try locatedIntgrationTest.integrationTest.doNotCompareNames?
+        .map { try Regex(makeRegexText(from: $0)) }
+    
+    let regexesForDoNotCompareRelativePaths = try locatedIntgrationTest.integrationTest.doNotCompareRelativePaths?
+        .map { try Regex(makeRegexText(from: $0)) }
+    
+    return try differentFiles(
+        in: testDirectory,
+        comparedTo: referenceDirectory,
+        ignore: { fileNameWithRelativePath in
+            regexesForIgnoringNames.contains(where: { fileNameWithRelativePath.fileName.contains($0) }) ||
+            regexesForIgnoringRelativePaths?.contains(where: { fileNameWithRelativePath.relativePath.contains($0) }) == true
+        },
+        doNotCompare: { fileNameWithRelativePath in
+            regexesForDoNotCompareNames?.contains(where: { fileNameWithRelativePath.fileName.contains($0) }) == true ||
+            regexesForDoNotCompareRelativePaths?.contains(where: { fileNameWithRelativePath.relativePath.contains($0) }) == true
+        }
+    )
         .sorted(by: { $0.compare($01, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedAscending})
 }
 
