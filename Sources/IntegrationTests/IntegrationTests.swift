@@ -155,11 +155,23 @@ public func execute(locatedIntgrationTests: [LocatedIntegrationTest], withTopDir
     return nonEqualFilesForTests
 }
 
-nonisolated(unsafe) let ignoredFiles = /^(\.gitignore|\.DS_Store|Thumbs\.db|.*\.log)$/
+enum FileRelevance {
+    case removal
+    case copy
+    
+    var ignore: Regex<(Substring, Substring)> {
+        switch self {
+        case .removal:
+            /^(\.gitignore)$/
+        case .copy:
+            /^(\.gitignore|\.DS_Store|Thumbs\.db)$/
+        }
+    }
+}
 
-func allFiles(in directory: URL) throws -> [URL] {
+func allFiles(in directory: URL, withFileRelevance fileRelevance: FileRelevance) throws -> [URL] {
     try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [])
-        .filter({ !$0.lastPathComponent.contains(ignoredFiles) })
+        .filter({ !$0.lastPathComponent.contains(fileRelevance.ignore) })
 }
 
 /// returns a list of non-equal files
@@ -185,11 +197,11 @@ public func execute(locatedIntgrationTest: LocatedIntegrationTest, withTopDirect
     try test(directory: testDirectory, description: "test")
     try test(directory: referenceDirectory, description: "reference")
     
-    for file in try allFiles(in: testDirectory) {
+    for file in try allFiles(in: testDirectory, withFileRelevance: .removal) {
         try FileManager.default.removeItem(at: file)
     }
     
-    for file in try allFiles(in: sourceDirectory) {
+    for file in try allFiles(in: sourceDirectory, withFileRelevance: .copy) {
         try FileManager.default.copyItem(at: file, to: testDirectory.appending(component: file.lastPathComponent))
     }
     
